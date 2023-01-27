@@ -226,7 +226,7 @@ function reduceAcceleration() {
     acceleration[1] += 1;
   }
 }
-
+console.log("test");
 function changeAcceleration() {
   if (
     squareY <= boxAdjustedHeight &&
