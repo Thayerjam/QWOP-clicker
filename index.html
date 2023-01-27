@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HTML 5 Boilerplate</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <canvas id="scrubCanvas"></canvas>
+    <div id="sidePanel">
+      <div id="upgradeWindow">
+        <button id="upgrade1">toggleGravity: off</button>
+        <button id="upgrade2">toggleWind: off</button>
+        <button id="upgrade3">toggleCookieCrawl: off</button>
+        <button id="upgrade4">toggleSmallCookie: off</button>
+        <button id="upgrade5">toggleBigCookie: off</button>
+      </div>
+      <div id="buildingWindow">
+        <button id="building1">Score gained by vertAcceleration</button>
+        <button id="building2">Score gained by horAcceleration</button>
+        <button id="building3">Score gained from cookie clicks</button>
+        <button id="building4">Score gained from wall bounces</button>
+        <button id="building5">Score gained.. over time?</button>
+      </div>
+      <div id="infoPanel">
+        <div id="controlInfo">
+          <div>~Controls~</div>
+          <div>Movement: Q, W, O, P</div>
+          <div>Click: Space</div>
+          <div>All Modifiers Off: Escape</div>
+        </div>
+        <div id="displayInfo">
+          <div>~Stats~</div>
+          <div id="vertAcceleration">Vertical Accel: 0</div>
+          <div id="horAcceleration">Horizontal Accel: 0</div>
+          <div id="score">Score: 0</div>
+          <div id="windSpeed">Wind Speed: 0</div>
+          <div id="windDirection">Wind Direction: 0, 0</div>
+        </div>
+      </div>
+    </div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Cursor-design1-arrow-steep.svg" id="cursor">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/2ChocolateChipCookies.jpg/1280px-2ChocolateChipCookies.jpg" id="cookie">
+	<script src="scripts.js"></script>
+  </body>
+</html>
