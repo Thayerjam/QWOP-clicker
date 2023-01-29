@@ -106,6 +106,21 @@ function reduceAcceleration() {
   if (userCursor.acceleration[1] < 0) {
     userCursor.acceleration[1] += 1;
   }
+  //attempts at removing the bug where your acceleration gets stuck at 0.5
+
+  // if (userCursor.acceleration[0] < 1 && userCursor.acceleration[0] > 0) {
+  //   userCursor.acceleration[0] = (userCursor.acceleration[0] - 0.1).toFixed(2);
+  // }
+  // if (userCursor.acceleration[0] > -1 && userCursor.acceleration[0] < 0) {
+  //   userCursor.acceleration[0] = (userCursor.acceleration[0] + 0.1).toFixed(2);
+  // }
+  // if (userCursor.acceleration[1] < 1 && userCursor.acceleration[1] > 0) {
+  //   userCursor.acceleration[1] = (userCursor.acceleration[1] - 0.1).toFixed(2);
+  // }
+  // if (userCursor.acceleration[1] > -1 && userCursor.acceleration[0] < 0) {
+  //   userCursor.acceleration[1] = (userCursor.acceleration[1] + 0.1).toFixed(2);
+  // }
+
   // userCursor.acceleration[0] = Math.round(userCursor.acceleration[0]);
   // userCursor.acceleration[1] = Math.round(userCursor.acceleration[1]);
 }
