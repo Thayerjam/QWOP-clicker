@@ -106,6 +106,8 @@ function reduceAcceleration() {
   if (userCursor.acceleration[1] < 0) {
     userCursor.acceleration[1] += 1;
   }
+  // userCursor.acceleration[0] = Math.round(userCursor.acceleration[0]);
+  // userCursor.acceleration[1] = Math.round(userCursor.acceleration[1]);
 }
 
 function changeAcceleration() {
