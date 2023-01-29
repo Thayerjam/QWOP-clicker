@@ -1,4 +1,4 @@
-/*
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ideas
     1) Toggleable "skulls" that make the game harder but give more points 
     2) clicker classes, talent trees, experience, skills
@@ -19,367 +19,544 @@
 ~where I left off
 
 Adding black borders to the canvas, one side of which will change to red randomly and periodically like with whack a mole. Score increases and color changes from red to black when player hits the red side.
-*/
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-let vertAccelerationDisplay = document.querySelector("#vertAcceleration");
-let horAccelerationDisplay = document.querySelector("#horAcceleration");
-let scoreDisplay = document.querySelector("#score");
-let windSpeedDisplay = document.querySelector("#windSpeed");
-let windDirectionDisplay = document.querySelector("#windDirection");
+/* Game Functions */
 
-let button1 = document.querySelector("#upgrade1");
-let button2 = document.querySelector("#upgrade2");
-let button3 = document.querySelector("#upgrade3");
-let button4 = document.querySelector("#upgrade4");
-let button5 = document.querySelector("#upgrade5");
+function windowResizeTriggers() {}
 
-let building4 = document.querySelector("#building4");
+function defineItemCoords(item) {
+  let itemCoords = item.getBoundingClientRect();
+  let output = {
+    left: (itemCoords.left / window.innerWidth) * 100,
+    right: (itemCoords.right / window.innerWidth) * 100,
+    top: (itemCoords.top / window.innerHeight) * 100,
+    bottom: (itemCoords.bottom / window.innerHeight) * 100,
+  };
+  return output;
+}
 
-let cookie = document.querySelector("#cookie");
-let cursor = document.querySelector("#cursor");
+function checkForClickableArea(cursorPercentX, cursorPercentY) {
+  if (
+    cursorPercentX >= clickableArea.left &&
+    cursorPercentX <= clickableArea.right &&
+    cursorPercentY >= clickableArea.top &&
+    cursorPercentY <= clickableArea.bottom
+  ) {
+    return true;
+  }
+  return false;
+}
 
-let canvasHeight = 1080;
-let canvasWidth = 1920;
-
-const c = document.getElementById("scrubCanvas");
-const ctx = c.getContext("2d");
-ctx.canvas.width = canvasWidth;
-ctx.canvas.height = canvasHeight;
-
-let squareX = 100;
-let squareY = 200;
-
-let squareSize = 30;
-let boxAdjustedHeight = 1080 - squareSize;
-let boxAdjustedWidth = 1920 - squareSize;
-
-let userCursor = {
-  squareX: 100,
-  squareY: 200,
-  squareSize: 10,
-  acceleration: [0, 0],
-  currentDirection: [0, 0, 0, 0],
-};
-
-/* [down, up, right, left] */
-let acceleration = [0, 0];
-let currentDirection = [0, 0, 0, 0];
-let score = 0;
-let scoreFactor = 1;
-
-let intervalSpeed = 30;
-let interval = setInterval(iterate, intervalSpeed);
-let windIntervalSpeed = 300;
-let windInterval = setInterval(changeWind, windIntervalSpeed);
-
-let cookieX;
-let cookieY;
-let isCookie = false;
-
-let gravity = 0;
-let isGravity = false;
-
-let windSpeed = 0;
-let windDirection = [0, 0];
-let isWind = false;
-
-let isScoringBounces = false;
-
-document.addEventListener("keydown", (e) => {
-  if (e.code === "KeyQ") {
-    currentDirection[0] = 1;
-  } else if (e.code === "KeyW") {
-    currentDirection[1] = 1;
-  } else if (e.code === "KeyO") {
-    currentDirection[2] = 1;
-  } else if (e.code === "KeyP") {
-    currentDirection[3] = 1;
-  } else if (e.code === "Space") {
-    let squareXPositionOnPage = (squareX / canvasWidth) * 100;
-    let squareYPositionOnPage = (squareY / canvasHeight) * 100;
-
-    let button1Coords = button1.getBoundingClientRect();
-    let button1LeftPercent = (button1Coords.left / window.innerWidth) * 100;
-    let button1RightPercent = (button1Coords.right / window.innerWidth) * 100;
-    let button1TopPercent = (button1Coords.top / window.innerHeight) * 100;
-    let button1BottomPercent =
-      (button1Coords.bottom / window.innerHeight) * 100;
-
-    function defineItemCoords(item) {
-      let itemCoords = item.getBoundingClientRect();
-      let output = {
-        left: (itemCoords.left / window.innerWidth) * 100,
-        right: (itemCoords.right / window.innerWidth) * 100,
-        top: (itemCoords.top / window.innerHeight) * 100,
-        bottom: (itemCoords.bottom / window.innerHeight) * 100,
-      };
-      return output;
-    }
-
-    let building4Coords = defineItemCoords(building4);
-
-    let button2Coords = button2.getBoundingClientRect();
-    let button2LeftPercent = (button2Coords.left / window.innerWidth) * 100;
-    let button2RightPercent = (button2Coords.right / window.innerWidth) * 100;
-    let button2TopPercent = (button2Coords.top / window.innerHeight) * 100;
-    let button2BottomPercent =
-      (button2Coords.bottom / window.innerHeight) * 100;
-
-    let cookieCoords = cookie.getBoundingClientRect();
-    let cookieLeftPercent = (cookieCoords.left / window.innerWidth) * 100;
-    let cookieRightPercent = (cookieCoords.right / window.innerWidth) * 100;
-    let cookieTopPercent = (cookieCoords.top / window.innerHeight) * 100;
-    let cookieBottomPercent = (cookieCoords.bottom / window.innerHeight) * 100;
-
-    console.log(squareXPositionOnPage, squareYPositionOnPage);
-    console.log("left", button1LeftPercent);
-    console.log("top", button1TopPercent);
-
-    if (
-      squareXPositionOnPage >= button1LeftPercent &&
-      squareXPositionOnPage <= button1RightPercent &&
-      squareYPositionOnPage >= button1TopPercent &&
-      squareYPositionOnPage <= button1BottomPercent
-    ) {
-      button1.click();
-    } else if (
-      squareXPositionOnPage >= button2LeftPercent &&
-      squareXPositionOnPage <= button2RightPercent &&
-      squareYPositionOnPage >= button2TopPercent &&
-      squareYPositionOnPage <= button2BottomPercent
-    ) {
-      button2.click();
-    } else if (
-      squareXPositionOnPage >= cookieLeftPercent &&
-      squareXPositionOnPage <= cookieRightPercent &&
-      squareYPositionOnPage >= cookieTopPercent &&
-      squareYPositionOnPage <= cookieBottomPercent
-    ) {
-      cookie.style.display = "none";
-      isCookie = false;
-      score += scoreFactor;
-    } else if (
-      squareXPositionOnPage >= building4Coords.left &&
-      squareXPositionOnPage <= building4Coords.right &&
-      squareYPositionOnPage >= building4Coords.top &&
-      squareYPositionOnPage <= building4Coords.bottom
-    ) {
-      if (building4.style.backgroundColor === "green") {
-        building4.style.backgroundColor = "";
-      } else {
-        building4.style.backgroundColor = "green";
-      }
-      isScoringBounces = !isScoringBounces;
-    } else {
-      console.log("you clicked on nothing!");
-    }
-  } else if (e.code === "Escape") {
-    if (isGravity) {
-      toggleGravity();
-    }
-    if (isWind) {
-      toggleWind();
+function checkAndClickButton(cursorPercentY) {
+  let counter = -1;
+  for (button of Object.entries(clickableButtons)) {
+    counter += 1;
+    if (cursorPercentY >= button[1].top && cursorPercentY <= button[1].bottom) {
+      Object.entries(upgradesAndBuildings)[counter][1].click();
+      break;
     }
   }
-});
-
-document.addEventListener("keyup", (e) => {
-  if (e.code === "KeyQ") {
-    currentDirection[0] = 0;
-  } else if (e.code === "KeyW") {
-    currentDirection[1] = 0;
-  } else if (e.code === "KeyO") {
-    currentDirection[2] = 0;
-  } else if (e.code === "KeyP") {
-    currentDirection[3] = 0;
-  }
-});
+}
 
 function generateCookie() {
-  let cookieStyle = getComputedStyle(cookie);
-  let cookieWidth = parseInt(cookieStyle.width);
-  let cookieHeight = parseInt(cookieStyle.height);
-  cookieX =
-    Math.random() * (window.innerWidth - cookieWidth - 10 - 250) + 10 + 250;
-  cookieY = Math.random() * (window.innerHeight - cookieHeight - 10) + 10;
-  cookie.style.left = `${cookieX}px`;
-  cookie.style.top = `${cookieY}px`;
-  cookie.style.display = "initial";
-  isCookie = true;
+  cookie.x =
+    Math.random() * (window.innerWidth - cookie.cookieWidth - windowStats.borderSize - windowStats.sidebarSize) +
+    windowStats.borderSize +
+    windowStats.sidebarSize;
+  cookie.y =
+    Math.random() * (window.innerHeight - cookie.cookieHeight - windowStats.borderSize) + windowStats.borderSize;
+  htmlObjects.cookie.style.display = "initial"; // can be moved to gameStart function
+  cookie.isCookie = true;
+  cookie.cookieCoords = defineItemCoords(htmlObjects.cookie);
+}
+
+function moveCookie() {
+  if (cookie.x < windowStats.sidebarSize) {
+    cookie.x = windowStats.sidebarSize;
+  }
+  if (cookie.x > window.innerWidth - cookie.cookieWidth - windowStats.borderSize) {
+    cookie.x = window.innerWidth - cookie.cookieWidth - windowStats.borderSize;
+  }
+  if (cookie.y < 0) {
+    cookie.y = 0;
+  }
+  if (cookie.y > window.innerHeight - cookie.cookieHeight - windowStats.borderSize) {
+    cookie.y = window.innerHeight - cookie.cookieHeight - windowStats.borderSize;
+  }
+  htmlObjects.cookie.style.left = `${cookie.x}px`;
+  htmlObjects.cookie.style.top = `${cookie.y}px`;
+  cookie.cookieCoords = defineItemCoords(htmlObjects.cookie);
 }
 
 function clearSquare() {
-  ctx.clearRect(squareX - 1, squareY - 1, squareSize + 2, squareSize + 2);
+  ctx.clearRect(userCursor.x - 1, userCursor.y - 1, userCursor.size + 2, userCursor.size + 2);
 }
 
 function reduceAcceleration() {
-  if (acceleration[0] > 0) {
-    acceleration[0] -= 1 - gravity;
+  if (userCursor.acceleration[0] > 0) {
+    userCursor.acceleration[0] -= 1 - effects.gravity;
   }
-  if (acceleration[1] > 0) {
-    acceleration[1] -= 1;
+  if (userCursor.acceleration[1] > 0) {
+    userCursor.acceleration[1] -= 1;
   }
-  if (acceleration[0] < 0) {
-    acceleration[0] += 1;
+  if (userCursor.acceleration[0] < 0) {
+    userCursor.acceleration[0] += 1;
   }
-  if (acceleration[1] < 0) {
-    acceleration[1] += 1;
+  if (userCursor.acceleration[1] < 0) {
+    userCursor.acceleration[1] += 1;
   }
 }
-console.log("test");
+
 function changeAcceleration() {
   if (
-    squareY <= boxAdjustedHeight &&
-    squareY >= 0 &&
-    squareX <= boxAdjustedWidth &&
-    squareX >= 0
+    userCursor.y <= windowStats.boxAdjustedHeight &&
+    userCursor.y >= 0 &&
+    userCursor.x <= windowStats.boxAdjustedWidth &&
+    userCursor.x >= 0
   ) {
-    if (isGravity && squareY !== boxAdjustedHeight) {
-      acceleration[0] += 1;
+    if (effects.isGravity && userCursor.y !== windowStats.boxAdjustedHeight) {
+      userCursor.acceleration[0] += 1;
     }
-    if (currentDirection[0] === 1 && squareY < boxAdjustedHeight) {
+    if (userCursor.currentDirection[0] === 1 && userCursor.y < windowStats.boxAdjustedHeight) {
       //down
-      acceleration[0] += 3;
+      userCursor.acceleration[0] += 3;
     }
-    if (currentDirection[1] === 1 && squareY > 0) {
+    if (userCursor.currentDirection[1] === 1 && userCursor.y > 0) {
       //up
-      acceleration[0] -= 3;
+      userCursor.acceleration[0] -= 3;
     }
-    if (currentDirection[2] === 1 && squareX < boxAdjustedWidth) {
+    if (userCursor.currentDirection[2] === 1 && userCursor.x < windowStats.boxAdjustedWidth) {
       //right
-      acceleration[1] += 3;
+      userCursor.acceleration[1] += 3;
     }
-    if (currentDirection[3] === 1 && squareX > 0) {
+    if (userCursor.currentDirection[3] === 1 && userCursor.x > 0) {
       //left
-      acceleration[1] -= 3;
+      userCursor.acceleration[1] -= 3;
     }
   }
 }
 
 function moveSquare() {
-  if (isWind) {
-    squareY += acceleration[0] + windDirection[0] * windSpeed;
-    squareX += acceleration[1] + windDirection[1] * windSpeed;
+  if (effects.isWind) {
+    userCursor.y += userCursor.acceleration[0] + effects.windDirection[0] * effects.windSpeed[0];
+    userCursor.x += userCursor.acceleration[1] + effects.windDirection[1] * effects.windSpeed[0];
   } else {
-    squareY += acceleration[0];
-    squareX += acceleration[1];
+    userCursor.y += userCursor.acceleration[0];
+    userCursor.x += userCursor.acceleration[1];
   }
 
-  squareY = Number(squareY.toFixed(2));
-  squareX = Number(squareX.toFixed(2));
-  if (squareY < 0) {
-    squareY = 0;
+  userCursor.y = Number(userCursor.y.toFixed(2));
+  userCursor.x = Number(userCursor.x.toFixed(2));
+  if (userCursor.y < 0) {
+    userCursor.y = 0;
   }
-  if (squareY > boxAdjustedHeight) {
-    squareY = boxAdjustedHeight;
+  if (userCursor.y > windowStats.boxAdjustedHeight) {
+    userCursor.y = windowStats.boxAdjustedHeight;
   }
-  if (squareX < 0) {
-    squareX = 0;
+  if (userCursor.x < 0) {
+    userCursor.x = 0;
   }
-  if (squareX > boxAdjustedWidth) {
-    squareX = boxAdjustedWidth;
+  if (userCursor.x > windowStats.boxAdjustedWidth) {
+    userCursor.x = windowStats.boxAdjustedWidth;
   }
 }
 
 function edgeCollision() {
-  if (squareY <= 0 || squareY >= boxAdjustedHeight) {
-    acceleration[0] = acceleration[0] * -1;
-    acceleration[0] = Math.floor(acceleration[0] / 1.3);
-    if (isScoringBounces) {
-      score += 1;
+  if (userCursor.y <= 0 || userCursor.y >= windowStats.boxAdjustedHeight) {
+    userCursor.acceleration[0] = userCursor.acceleration[0] * -1;
+    userCursor.acceleration[0] = Math.floor(userCursor.acceleration[0] / 1.3);
+    if (effects.isScoringBounces) {
+      score += scoreFactor;
     }
   }
-  if (squareX <= 0 || squareX >= boxAdjustedWidth) {
-    acceleration[1] = acceleration[1] * -1;
-    acceleration[1] = Math.floor(acceleration[1] / 1.3);
-    if (isScoringBounces) {
-      score += 1;
+  if (userCursor.x <= 0 || userCursor.x >= windowStats.boxAdjustedWidth) {
+    userCursor.acceleration[1] = userCursor.acceleration[1] * -1;
+    userCursor.acceleration[1] = Math.floor(userCursor.acceleration[1] / 1.3);
+    if (effects.isScoringBounces) {
+      score += scoreFactor;
     }
   }
 }
 
 function drawSquare() {
-  ctx.drawImage(cursor, squareX, squareY, squareSize, squareSize);
+  ctx.drawImage(htmlObjects.cursor, userCursor.x, userCursor.y, userCursor.size, userCursor.size);
 }
 
-function incrementScore() {}
+function incrementScore() {
+  if (effects.isVertScoring) {
+    score += Math.round(Math.abs(userCursor.acceleration[0]) / 20);
+  }
+  if (effects.isHorScoring) {
+    score += Math.round(Math.abs(userCursor.acceleration[1]) / 20);
+  }
+} // not currently used
 
-function updateScore() {
-  scoreDisplay.innerText = `Score: ${score}`;
+function updateDisplay() {
+  htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
+  htmlObjects.scoreFactorDisplay.innerText = `Score Factor: ${scoreFactor}`;
+  htmlObjects.cookieSizeFactorDisplay.innerText = `Cookie Size Factor: ${cookie.sizeFactor}`;
+  htmlObjects.vertAccelerationDisplay.innerText = "Vertical Accel: " + userCursor.acceleration[0];
+  htmlObjects.horAccelerationDisplay.innerText = "Horizontal Accel: " + userCursor.acceleration[1];
+  htmlObjects.windSpeedDisplay.innerText = `Wind Speed: ${effects.windSpeed[0]}`;
+  htmlObjects.windDirectionDisplay.innerText = `Wind Direction: ${effects.windDirection[0]}, ${effects.windDirection[1]}`;
+  htmlObjects.crawlSpeedDisplay.innerText = `Crawl Speed: ${cookie.crawlSpeed[0]}`;
+  htmlObjects.crawlDirectionDisplay.innerText = `Crawl Direction: ${cookie.crawlDirection[0]}, ${cookie.crawlDirection[1]}`;
 }
 
 function iterate() {
-  if (!isCookie) {
+  if (!cookie.isCookie) {
     generateCookie();
   }
-  vertAccelerationDisplay.innerText = "Vertical Accel: " + acceleration[0];
-  horAccelerationDisplay.innerText = "Horizontal Accel: " + acceleration[1];
+  if (cookie.isCrawling) {
+    changeWindOrCrawl(cookie.crawlSpeed, cookie.crawlDirection); // needs to be defined
+    cookie.x += cookie.crawlSpeed[0] * cookie.crawlDirection[0];
+    cookie.y += cookie.crawlSpeed[0] * cookie.crawlDirection[1];
+    cookie.x = Number(cookie.x.toFixed(2));
+    cookie.y = Number(cookie.y.toFixed(2));
+    htmlObjects.cookie.style.left = `${cookie.x}px`;
+    htmlObjects.cookie.style.top = `${cookie.y}px`;
+    intervalObj.intervalCounter = 0;
+  }
+  if (effects.isWind) {
+    changeWindOrCrawl(effects.windSpeed, effects.windDirection);
+  }
+  moveCookie();
   clearSquare();
   edgeCollision();
   reduceAcceleration();
   changeAcceleration();
   moveSquare();
   drawSquare();
-  incrementScore();
-  updateScore();
+  if (intervalObj.intervalCounter === 25) {
+    incrementScore();
+    intervalObj.intervalCounter = 0;
+  } else {
+    intervalObj.intervalCounter += 1;
+  }
+
+  updateDisplay();
 }
 
 function toggleGravity() {
-  isGravity = !isGravity;
-  if (gravity === 0) {
-    gravity = 0.5;
+  effects.isGravity = !effects.isGravity;
+  if (effects.gravity === 0) {
+    effects.gravity = 0.5;
     scoreFactor = Math.floor(scoreFactor * 2);
-    button1.innerText = "toggleGravity: on";
+    upgradesAndBuildings.upgrade1.innerText = "toggleGravity: on";
   } else {
-    gravity = 0;
+    effects.gravity = 0;
     scoreFactor = Math.floor(scoreFactor / 2);
-    button1.innerText = "toggleGravity: off";
+    upgradesAndBuildings.upgrade1.innerText = "toggleGravity: off";
   }
 }
 
 function toggleWind() {
-  if (!isWind) {
-    button2.innerText = "toggleWind: on";
+  if (!effects.isWind) {
+    upgradesAndBuildings.upgrade2.innerText = "toggleWind: on";
   } else {
-    button2.innerText = "toggleWind: off";
+    upgradesAndBuildings.upgrade2.innerText = "toggleWind: off";
   }
-  isWind = !isWind;
+  effects.isWind = !effects.isWind;
 }
 
-function changeWind() {
+function changeWindOrCrawl(speed, direction) {
   let randomNumber = Math.random();
   if (randomNumber > 0.8) {
-    windSpeed += 0.1;
+    speed[0] += 0.1;
   } else if (randomNumber < 0.2) {
-    windSpeed -= 0.1;
+    speed[0] -= 0.1;
   }
-  if (windSpeed >= 1) {
-    windSpeed = 1;
+  if (speed[0] >= 1) {
+    speed[0] = 1;
   }
-  if (windSpeed <= -1) {
-    windSpeed = -1;
+  if (speed[0] <= -1) {
+    speed[0] = -1;
   }
   if (randomNumber < 0.2) {
-    if (windDirection[0] < 3) {
-      windDirection[0] += 1;
+    if (direction[0] < 3) {
+      direction[0] += 1;
     }
   } else if (randomNumber < 0.4) {
-    if (windDirection[0] > -3) {
-      windDirection[0] -= 1;
+    if (direction[0] > -3) {
+      direction[0] -= 1;
     }
   } else if (randomNumber < 0.6) {
-    if (windDirection[1] < 3) {
-      windDirection[1] += 1;
+    if (direction[1] < 3) {
+      direction[1] += 1;
     }
   } else if (randomNumber < 0.8) {
-    if (windDirection[1] > -3) {
-      windDirection[1] -= 1;
+    if (direction[1] > -3) {
+      direction[1] -= 1;
     }
   }
-  windSpeed = Number(windSpeed.toFixed(2));
-  windSpeedDisplay.innerText = `Wind Speed: ${windSpeed}`;
-  windDirectionDisplay.innerText = `Wind Direction: ${windDirection[0]}, ${windDirection[1]}`;
+  speed[0] = Number(speed[0].toFixed(2));
 }
 
-button1.addEventListener("click", toggleGravity);
-button2.addEventListener("click", toggleWind);
+function toggleCookieCrawl() {
+  if (!cookie.isCrawling) {
+    upgradesAndBuildings.upgrade3.innerHTML = "toggleCookieCrawl: on";
+  } else {
+    upgradesAndBuildings.upgrade3.innerHTML = "toggleCookieCrawl: off";
+  }
+  cookie.isCrawling = !cookie.isCrawling;
+}
+
+function toggleSmallCookie() {
+  htmlObjects.cookie.style.width = htmlObjects.cookie.offsetWidth / 2 + "px";
+  htmlObjects.cookie.style.height = htmlObjects.cookie.offsetHeight / 2 + "px";
+  cookie.sizeFactor -= 1;
+  scoreFactor += 1;
+  cookie.cookieCoords = defineItemCoords(htmlObjects.cookie);
+}
+
+function toggleBigCookie() {
+  htmlObjects.cookie.style.width = htmlObjects.cookie.offsetWidth * 2 + "px";
+  htmlObjects.cookie.style.height = htmlObjects.cookie.offsetHeight * 2 + "px";
+  cookie.sizeFactor += 1;
+  scoreFactor -= 1;
+  cookie.cookieCoords = defineItemCoords(htmlObjects.cookie);
+}
+
+function toggleVertScoring() {
+  if (!effects.isVertScoring) {
+    upgradesAndBuildings.building1.style.backgroundColor = "green";
+  } else {
+    upgradesAndBuildings.building1.style.backgroundColor = "";
+  }
+  effects.isVertScoring = !effects.isVertScoring;
+}
+
+function toggleHorScoring() {
+  if (!effects.isHorScoring) {
+    upgradesAndBuildings.building2.style.backgroundColor = "green";
+  } else {
+    upgradesAndBuildings.building2.style.backgroundColor = "";
+  }
+  effects.isHorScoring = !effects.isHorScoring;
+}
+
+function toggleIncreasedClickFactor() {
+  if (!effects.isClickEnhanced) {
+    scoreFactor *= 1.5;
+    effects.isClickEnhanced = true;
+    upgradesAndBuildings.building3.style.backgroundColor = "green";
+  } else {
+    scoreFactor /= 1.5;
+    effects.isClickEnhanced = false;
+    upgradesAndBuildings.building3.style.backgroundColor = "";
+  }
+}
+
+function toggleBounceScoring() {
+  if (!effects.isScoringBounces) {
+    upgradesAndBuildings.building4.style.backgroundColor = "green";
+  } else {
+    upgradesAndBuildings.building4.style.backgroundColor = "";
+  }
+  effects.isScoringBounces = !effects.isScoringBounces;
+}
+
+function toggleScoreOverTime() {}
+
+function placeholderFunction() {
+  console.log("placeholder function");
+}
+
+/* Global Variables */
+
+const htmlObjects = {
+  vertAccelerationDisplay: document.querySelector("#vertAcceleration"),
+  horAccelerationDisplay: document.querySelector("#horAcceleration"),
+  scoreDisplay: document.querySelector("#score"),
+  scoreFactorDisplay: document.querySelector("#scoreFactor"),
+  cookieSizeFactorDisplay: document.querySelector("#cookieSizeFactor"),
+  windSpeedDisplay: document.querySelector("#windSpeed"),
+  windDirectionDisplay: document.querySelector("#windDirection"),
+  crawlSpeedDisplay: document.querySelector("#crawlSpeed"),
+  crawlDirectionDisplay: document.querySelector("#crawlDirection"),
+  cookie: document.querySelector("#cookie"),
+  cursor: document.querySelector("#cursor"),
+};
+
+const upgradesAndBuildings = {
+  upgrade1: document.querySelector("#upgrade1"),
+  upgrade2: document.querySelector("#upgrade2"),
+  upgrade3: document.querySelector("#upgrade3"),
+  upgrade4: document.querySelector("#upgrade4"),
+  upgrade5: document.querySelector("#upgrade5"),
+  building1: document.querySelector("#building1"),
+  building2: document.querySelector("#building2"),
+  building3: document.querySelector("#building3"),
+  building4: document.querySelector("#building4"),
+  building5: document.querySelector("#building5"),
+  engine1: document.querySelector("#engine1"),
+  engine2: document.querySelector("#engine2"),
+  engine3: document.querySelector("#engine3"),
+  engine4: document.querySelector("#engine4"),
+  engine5: document.querySelector("#engine5"),
+};
+
+const clickableButtons = {
+  upgrade1: defineItemCoords(upgradesAndBuildings.upgrade1),
+  upgrade2: defineItemCoords(upgradesAndBuildings.upgrade2),
+  upgrade3: defineItemCoords(upgradesAndBuildings.upgrade3),
+  upgrade4: defineItemCoords(upgradesAndBuildings.upgrade4),
+  upgrade5: defineItemCoords(upgradesAndBuildings.upgrade5),
+  building1: defineItemCoords(upgradesAndBuildings.building1),
+  building2: defineItemCoords(upgradesAndBuildings.building2),
+  building3: defineItemCoords(upgradesAndBuildings.building3),
+  building4: defineItemCoords(upgradesAndBuildings.building4),
+  building5: defineItemCoords(upgradesAndBuildings.building5),
+  engine1: defineItemCoords(upgradesAndBuildings.engine1),
+  engine2: defineItemCoords(upgradesAndBuildings.engine2),
+  engine3: defineItemCoords(upgradesAndBuildings.engine3),
+  engine4: defineItemCoords(upgradesAndBuildings.engine4),
+  engine5: defineItemCoords(upgradesAndBuildings.engine5),
+};
+
+const clickableArea = {
+  left: clickableButtons.upgrade1.left,
+  right: clickableButtons.upgrade1.right,
+  top: clickableButtons.upgrade1.top,
+  bottom: clickableButtons.engine5.bottom,
+};
+
+const userCursor = {
+  x: 100,
+  y: 200,
+  size: 30,
+  /* [direction, direction] */
+  // ^ FIND THIS OUT ^
+  acceleration: [0, 0],
+  /* [down, up, right, left] */
+  currentDirection: [0, 0, 0, 0],
+};
+
+const windowStats = {
+  canvasHeight: 1080,
+  canvasWidth: 1920,
+  boxAdjustedHeight: 1080 - userCursor.size,
+  boxAdjustedWidth: 1920 - userCursor.size,
+  borderSize: 0,
+  sidebarSize: 250,
+};
+
+const effects = {
+  gravity: 0,
+  isGravity: false,
+  windSpeed: [0],
+  windDirection: [0, 0],
+  isWind: false,
+  isVertScoring: false,
+  isHorScoring: false,
+  isClickEnhanced: false,
+  isScoringBounces: false,
+};
+
+const cookie = {
+  x: 110,
+  y: 110,
+  isCookie: false,
+  isCrawling: false,
+  crawlSpeed: [0],
+  crawlDirection: [0, 0],
+  sizeFactor: 0,
+  cookieStyle: getComputedStyle(htmlObjects.cookie),
+  cookieWidth: function () {
+    this.cookieWidth = parseInt(this.cookieStyle.width);
+    return this;
+  },
+  cookieHeight: function () {
+    this.cookieHeight = parseInt(this.cookieStyle.height);
+    return this;
+  },
+}
+  .cookieWidth() //self initializing cookieWidth
+  .cookieHeight(); //self initializing cookieHeight
+
+const c = document.getElementById("scrubCanvas");
+const ctx = c.getContext("2d");
+ctx.canvas.width = windowStats.canvasWidth;
+ctx.canvas.height = windowStats.canvasHeight;
+
+let score = 0;
+let scoreFactor = 1;
+
+const intervalObj = {
+  intervalSpeed: 30,
+  intervalCounter: 0,
+  interval: function () {
+    this.interval = setInterval(iterate, this.intervalSpeed);
+    return this;
+  },
+}.interval();
+
+/* Event Listeners */
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "KeyQ") {
+    userCursor.currentDirection[0] = 1;
+  } else if (e.code === "KeyW") {
+    userCursor.currentDirection[1] = 1;
+  } else if (e.code === "KeyO") {
+    userCursor.currentDirection[2] = 1;
+  } else if (e.code === "KeyP") {
+    userCursor.currentDirection[3] = 1;
+  } else if (e.code === "Space") {
+    let cursorPercentX = (userCursor.x / windowStats.canvasWidth) * 100;
+    let cursorPercentY = (userCursor.y / windowStats.canvasHeight) * 100;
+
+    if (checkForClickableArea(cursorPercentX, cursorPercentY)) {
+      checkAndClickButton(cursorPercentY);
+    } else if (
+      cursorPercentX >= cookie.cookieCoords.left &&
+      cursorPercentX <= cookie.cookieCoords.right &&
+      cursorPercentY >= cookie.cookieCoords.top &&
+      cursorPercentY <= cookie.cookieCoords.bottom
+    ) {
+      cookie.isCookie = false;
+      score += scoreFactor;
+    }
+  } else if (e.code === "Escape") {
+    if (effects.isGravity) {
+      toggleGravity();
+    }
+    if (effects.isWind) {
+      toggleWind();
+    }
+    if (cookie.isCrawling) {
+      toggleCookieCrawl();
+    }
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  if (e.code === "KeyQ") {
+    userCursor.currentDirection[0] = 0;
+  } else if (e.code === "KeyW") {
+    userCursor.currentDirection[1] = 0;
+  } else if (e.code === "KeyO") {
+    userCursor.currentDirection[2] = 0;
+  } else if (e.code === "KeyP") {
+    userCursor.currentDirection[3] = 0;
+  }
+});
+
+upgradesAndBuildings.upgrade1.addEventListener("click", toggleGravity);
+upgradesAndBuildings.upgrade2.addEventListener("click", toggleWind);
+upgradesAndBuildings.upgrade3.addEventListener("click", toggleCookieCrawl); //
+upgradesAndBuildings.upgrade4.addEventListener("click", toggleSmallCookie); // needs tweaking to account for decimal values
+upgradesAndBuildings.upgrade5.addEventListener("click", toggleBigCookie); // needs tweaking to account for decimal values
+
+upgradesAndBuildings.building1.addEventListener("click", toggleVertScoring); //
+upgradesAndBuildings.building2.addEventListener("click", toggleHorScoring); //
+upgradesAndBuildings.building3.addEventListener("click", toggleIncreasedClickFactor);
+upgradesAndBuildings.building4.addEventListener("click", toggleBounceScoring);
+upgradesAndBuildings.building5.addEventListener("click", toggleScoreOverTime); //
+
+upgradesAndBuildings.engine1.addEventListener("click", placeholderFunction); //
+upgradesAndBuildings.engine2.addEventListener("click", placeholderFunction); //
+upgradesAndBuildings.engine3.addEventListener("click", placeholderFunction); //
+upgradesAndBuildings.engine4.addEventListener("click", placeholderFunction); //
+upgradesAndBuildings.engine5.addEventListener("click", placeholderFunction); //

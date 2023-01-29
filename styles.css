@@ -3,19 +3,22 @@
 }
 
 body {
-    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     width: 100%;
     margin: 0;
     padding: 0;
+    background-color: #f1f1f1;
 }
 
 canvas {
+    pointer-events: none;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     z-index: 1;
     position: absolute;
-    border: 0px solid black;
-    border-top-color: red;
 }
 
 #sidePanel {
@@ -23,11 +26,19 @@ canvas {
     flex-direction: column;
     position: absolute;
     height: 100vh;
-    width: 250px;
+    width: 300px;
     left: 0;
     top: 0;
     background-color: lightblue;
-    justify-content: space-around;
+    border-right: 5px solid black;
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#sidePanel > div {
+    flex: 1;
 }
 
 #controlInfo {
@@ -38,16 +49,24 @@ canvas {
     padding-right: 30px;
 }
 
-#upgradeWindow, #buildingWindow, #infoPanel {
+#upgradeWindow, #buildingWindow, #incrementEngines, #infoPanel {
     display: flex;
-    margin: 10px;
     flex-direction: column;
-    border: 2px solid black;
     z-index: 0;
+
 }
 
-#upgradeWindow > *, #buildingWindow > * {
+#upgradeWindow, #buildingWindow, #incrementEngines {
+    padding: 0px 10px;
+}
+
+#upgradeWindow, #buildingWindow {
+    border-bottom: 3px dashed black;
+}
+
+#upgradeWindow > *, #buildingWindow > *, #incrementEngines > * {
     margin: 10px;
+    flex: 1;
 }
 
 #cursor {
@@ -61,15 +80,43 @@ canvas {
     width: 75px;
 }
 
-#upgrade3, #upgrade4, #upgrade5 {
-    background-color: rgb(235, 90, 90);
-}
-
-#building1, #building2, #building3, #building5 {
+#building5 {
     background-color: rgb(235, 90, 90);
 }
 
 button {
     padding: 0;
     margin: 0;
+    height: 40px;
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+#infoPanel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 50%;
+    width: 300px;
+    border: 2px solid black;
+    margin: 10px;
+}
+
+#controlInfo, #displayInfo {
+
+}
+
+#helpButton {
+
+}
+
+#openingSequence {
+    position: absolute;
+    top: 0;
+    font-size: 30px;
+    text-align: center;
+}
+
+#openingTutorial2, #openingTutorial3 {
+    display: none;
 }

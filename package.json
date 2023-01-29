@@ -1,0 +1,22 @@
+{
+  "name": "qwop_clicker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "scripts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thayerjam/QWOP-clicker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Thayerjam/QWOP-clicker/issues"
+  },
+  "homepage": "https://github.com/Thayerjam/QWOP-clicker#readme",
+  "dependencies": {
+    "eslint": "^8.33.0"
+  }
+}

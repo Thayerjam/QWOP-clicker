@@ -8,14 +8,21 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <a href="#" id="helpButton">Help</a>
     <canvas id="scrubCanvas"></canvas>
+    <div id="openingSequence">
+      <h1 id="openingTitle">The rather curious aventures of a drunken cursor</h1>
+      <h3 id="openingTutorial1">Try moving around with Q, W, O, P</h3>
+      <h3 id="openingTutorial2">Great, now try to click that cookie with Spacebar</h3>
+      <h3 id="openingTutorial3">If you ever feel you've made a grave mistake, hit Escape</h3>
+    </div>
     <div id="sidePanel">
       <div id="upgradeWindow">
         <button id="upgrade1">toggleGravity: off</button>
         <button id="upgrade2">toggleWind: off</button>
         <button id="upgrade3">toggleCookieCrawl: off</button>
-        <button id="upgrade4">toggleSmallCookie: off</button>
-        <button id="upgrade5">toggleBigCookie: off</button>
+        <button id="upgrade4">Smallify Cookie</button>
+        <button id="upgrade5">Bigify Cookie</button>
       </div>
       <div id="buildingWindow">
         <button id="building1">Score gained by vertAcceleration</button>
@@ -24,21 +31,32 @@
         <button id="building4">Score gained from wall bounces</button>
         <button id="building5">Score gained.. over time?</button>
       </div>
-      <div id="infoPanel">
-        <div id="controlInfo">
-          <div>~Controls~</div>
-          <div>Movement: Q, W, O, P</div>
-          <div>Click: Space</div>
-          <div>All Modifiers Off: Escape</div>
-        </div>
-        <div id="displayInfo">
-          <div>~Stats~</div>
-          <div id="vertAcceleration">Vertical Accel: 0</div>
-          <div id="horAcceleration">Horizontal Accel: 0</div>
-          <div id="score">Score: 0</div>
-          <div id="windSpeed">Wind Speed: 0</div>
-          <div id="windDirection">Wind Direction: 0, 0</div>
-        </div>
+      <div id="incrementEngines">
+        <button id="engine1">increment Engine 1</button>
+        <button id="engine2">increment Engine 2</button>
+        <button id="engine3">increment Engine 3</button>
+        <button id="engine4">increment Engine 4</button>
+        <button id="engine5">increment Engine 5</button>
+      </div>
+    </div>
+    <div id="infoPanel">
+      <div id="controlInfo">
+        <div>~Controls~</div>
+        <div>Movement: Q, W, O, P</div>
+        <div>Click: Space</div>
+        <div>All Modifiers Off: Escape</div>
+      </div>
+      <div id="displayInfo">
+        <div>~Stats~</div>
+        <div id="vertAcceleration">Vertical Accel: 0</div>
+        <div id="horAcceleration">Horizontal Accel: 0</div>
+        <div id="score">Score: 0</div>
+        <div id="scoreFactor">Score Factor: 0</div>
+        <div id="cookieSizeFactor">Cookie Size Factor: 0</div>
+        <div id="windSpeed">Wind Speed: 0</div>
+        <div id="windDirection">Wind Direction: 0, 0</div>
+        <div id="crawlSpeed">Crawl Speed: 0</div>
+        <div id="crawlDirection">Crawl Direction: 0, 0</div>
       </div>
     </div>
     <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Cursor-design1-arrow-steep.svg" id="cursor">
