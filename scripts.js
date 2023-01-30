@@ -35,46 +35,80 @@ const gameStartProperties = {
   sequence2Complete: false,
   sequence3Complete: false,
   sequence4Complete: false,
+  sequence5Complete: false,
+  sequence6Complete: false,
+  sequence7Complete: false,
 };
 
 function gameStart() {
   htmlObjects.openingTitle.style.opacity = 1;
+  //after title displays for 7 seconds, fade out over 3 seconds
   setTimeout(() => {
     htmlObjects.openingTitle.style.opacity = 0;
-    htmlObjects.opener1.style.opacity = 1;
-    gameStartProperties.sequence1Complete = true;
-  }, 3000);
+    //after title is nearly fully faded-out (2.5 seconds), fade-in opener 1 over 3 seconds
+    setTimeout(() => {
+      htmlObjects.opener1.style.opacity = 1;
+      //after 3 seconds, opener 1 is fully faded in. Allow movement to potentially begin sequence2
+      setTimeout(() => {
+        gameStartProperties.sequence1Complete = true;
+      }, 3000);
+    }, 2500);
+  }, 7000);
   function checkForActions() {
-    if (userCursor.acceleration[0] > 30 || userCursor.acceleration[0] < -30) {
+    if (userCursor.acceleration[0] > 20 || userCursor.acceleration[0] < -20) {
       gameStartProperties.isVertMovementMet = true;
     }
-    if (userCursor.acceleration[1] > 30 || userCursor.acceleration[1] < -30) {
+    if (userCursor.acceleration[1] > 20 || userCursor.acceleration[1] < -20) {
       gameStartProperties.isHorMovementMet = true;
-    }
-    if (gameStartProperties.isSpacebarClicked && !gameStartProperties.sequence3Complete) {
-      htmlObjects.opener2.style.opacity = 0;
-      htmlObjects.opener3.style.opacity = 1;
-      gameStartProperties.sequence3Complete = true;
     }
     if (
       gameStartProperties.isHorMovementMet &&
       gameStartProperties.isVertMovementMet &&
-      !gameStartProperties.sequence2Complete
+      !gameStartProperties.sequence2Complete &&
+      gameStartProperties.sequence1Complete
     ) {
+      //fade-out opener1 over 3 seconds
       htmlObjects.opener1.style.opacity = 0;
-      htmlObjects.opener2.style.opacity = 1;
-      gameStartProperties.sequence2Complete = true;
+      //after opener1 is nearly faded out, fade-in opener 2
+      setTimeout(() => {
+        htmlObjects.opener2.style.opacity = 1;
+        //after opener2 is fully faded-in, allow for sequence 3 to potentially begin
+        setTimeout(() => {
+          gameStartProperties.sequence2Complete = true;
+        }, 3000);
+      }, 2500);
+    }
+    if (
+      gameStartProperties.isSpacebarClicked &&
+      !gameStartProperties.sequence3Complete &&
+      gameStartProperties.sequence2Complete
+    ) {
+      //fade-out opener2 over 3 seconds
+      htmlObjects.opener2.style.opacity = 0;
+      //after opener2 is nearly faded-out, fade-in opener3 over 3 seconds
+      setTimeout(() => {
+        htmlObjects.opener3.style.opacity = 1;
+        setTimeout(() => {
+          gameStartProperties.sequence3Complete = true;
+        }, 3000);
+      }, 2500);
+    }
+    if (gameStartProperties.sequence3Complete && !gameStartProperties.sequence4Complete) {
+      htmlObjects.opener3.style.opacity = 0;
+      setTimeout(() => {
+        gameStartProperties.sequence4Complete = true;
+      }, 3000);
+    }
+    if (score >= 3 && gameStartProperties.sequence4Complete) {
+      htmlObjects.topStatsBar.style.top = 0;
+      gameStartProperties.sequence5Complete = true;
+    }
+    if (score >= 10 && gameStartProperties.sequence5Complete) {
+      htmlObjects.sidePanel.style.left = 0;
+      gameStartProperties.sequence6Complete = true;
     }
   }
   let movementCheckInterval = setInterval(checkForActions, 30);
-  // setTimeout(() => {
-  //   htmlObjects.opener1.style.visibility = "visible";
-  //   htmlObjects.opener1.style.opacity = 1;
-  // }, 3000);
-  // setTimeout(() => {
-  //   htmlObjects.opener2.style.visibility = "visible";
-  //   htmlObjects.opener2.style.opacity = 1;
-  // }, 6000);
 }
 
 function defineItemCoords(item) {
@@ -236,14 +270,14 @@ function edgeCollision() {
     userCursor.acceleration[0] = userCursor.acceleration[0] * -1;
     userCursor.acceleration[0] = Math.floor(userCursor.acceleration[0] / 1.3);
     if (effects.isScoringBounces) {
-      score += scoreFactor;
+      score += clickFactor;
     }
   }
   if (userCursor.x <= 0 || userCursor.x >= windowStats.boxAdjustedWidth) {
     userCursor.acceleration[1] = userCursor.acceleration[1] * -1;
     userCursor.acceleration[1] = Math.floor(userCursor.acceleration[1] / 1.3);
     if (effects.isScoringBounces) {
-      score += scoreFactor;
+      score += clickFactor;
     }
   }
 }
@@ -262,15 +296,16 @@ function incrementScore() {
 } // not currently used
 
 function updateDisplay() {
-  htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
-  htmlObjects.scoreFactorDisplay.innerText = `Score Factor: ${scoreFactor}`;
-  htmlObjects.cookieSizeFactorDisplay.innerText = `Cookie Size Factor: ${cookie.sizeFactor}`;
-  htmlObjects.vertAccelerationDisplay.innerText = "Vertical Accel: " + userCursor.acceleration[0];
-  htmlObjects.horAccelerationDisplay.innerText = "Horizontal Accel: " + userCursor.acceleration[1];
-  htmlObjects.windSpeedDisplay.innerText = `Wind Speed: ${effects.windSpeed[0]}`;
-  htmlObjects.windDirectionDisplay.innerText = `Wind Direction: ${effects.windDirection[0]}, ${effects.windDirection[1]}`;
-  htmlObjects.crawlSpeedDisplay.innerText = `Crawl Speed: ${cookie.crawlSpeed[0]}`;
-  htmlObjects.crawlDirectionDisplay.innerText = `Crawl Direction: ${cookie.crawlDirection[0]}, ${cookie.crawlDirection[1]}`;
+  // htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
+  // htmlObjects.clickFactorDisplay.innerText = `Score Factor: ${clickFactor}`;
+  // htmlObjects.cookieSizeFactorDisplay.innerText = `Cookie Size Factor: ${cookie.sizeFactor}`;
+  // htmlObjects.vertAccelerationDisplay.innerText = "Vertical Accel: " + userCursor.acceleration[0];
+  // htmlObjects.horAccelerationDisplay.innerText = "Horizontal Accel: " + userCursor.acceleration[1];
+  // htmlObjects.windSpeedDisplay.innerText = `Wind Speed: ${effects.windSpeed[0]}`;
+  // htmlObjects.windDirectionDisplay.innerText = `Wind Direction: ${effects.windDirection[0]}, ${effects.windDirection[1]}`;
+  // htmlObjects.crawlSpeedDisplay.innerText = `Crawl Speed: ${cookie.crawlSpeed[0]}`;
+  // htmlObjects.crawlDirectionDisplay.innerText = `Crawl Direction: ${cookie.crawlDirection[0]}, ${cookie.crawlDirection[1]}`;
+  htmlObjects.topStatsBar.score;
 }
 
 function iterate() {
@@ -311,11 +346,11 @@ function toggleGravity() {
   effects.isGravity = !effects.isGravity;
   if (effects.gravity === 0) {
     effects.gravity = 0.5;
-    scoreFactor = Math.floor(scoreFactor * 2);
+    clickFactor = Math.floor(clickFactor * 2);
     upgradesAndBuildings.upgrade1.innerText = "toggleGravity: on";
   } else {
     effects.gravity = 0;
-    scoreFactor = Math.floor(scoreFactor / 2);
+    clickFactor = Math.floor(clickFactor / 2);
     upgradesAndBuildings.upgrade1.innerText = "toggleGravity: off";
   }
 }
@@ -375,7 +410,7 @@ function toggleSmallCookie() {
   htmlObjects.cookie.style.width = htmlObjects.cookie.offsetWidth / 2 + "px";
   htmlObjects.cookie.style.height = htmlObjects.cookie.offsetHeight / 2 + "px";
   cookie.sizeFactor -= 1;
-  scoreFactor += 1;
+  clickFactor += 1;
   cookie.cookieCoords = defineItemCoords(htmlObjects.cookie);
 }
 
@@ -383,7 +418,7 @@ function toggleBigCookie() {
   htmlObjects.cookie.style.width = htmlObjects.cookie.offsetWidth * 2 + "px";
   htmlObjects.cookie.style.height = htmlObjects.cookie.offsetHeight * 2 + "px";
   cookie.sizeFactor += 1;
-  scoreFactor -= 1;
+  clickFactor -= 1;
   cookie.cookieCoords = defineItemCoords(htmlObjects.cookie);
 }
 
@@ -407,11 +442,11 @@ function toggleHorScoring() {
 
 function toggleIncreasedClickFactor() {
   if (!effects.isClickEnhanced) {
-    scoreFactor *= 1.5;
+    clickFactor *= 1.5;
     effects.isClickEnhanced = true;
     upgradesAndBuildings.building3.style.backgroundColor = "green";
   } else {
-    scoreFactor /= 1.5;
+    clickFactor /= 1.5;
     effects.isClickEnhanced = false;
     upgradesAndBuildings.building3.style.backgroundColor = "";
   }
@@ -435,17 +470,21 @@ function placeholderFunction() {
 /* Global Variables */
 
 const htmlObjects = {
-  vertAccelerationDisplay: document.querySelector("#vertAcceleration"),
-  horAccelerationDisplay: document.querySelector("#horAcceleration"),
+  // vertAccelerationDisplay: document.querySelector("#vertAcceleration"),
+  // horAccelerationDisplay: document.querySelector("#horAcceleration"),
+  controlDropdown: document.querySelector("controlsDropdown"),
   scoreDisplay: document.querySelector("#score"),
-  scoreFactorDisplay: document.querySelector("#scoreFactor"),
-  cookieSizeFactorDisplay: document.querySelector("#cookieSizeFactor"),
-  windSpeedDisplay: document.querySelector("#windSpeed"),
-  windDirectionDisplay: document.querySelector("#windDirection"),
-  crawlSpeedDisplay: document.querySelector("#crawlSpeed"),
-  crawlDirectionDisplay: document.querySelector("#crawlDirection"),
+  clickFactorDisplay: document.querySelector("#clickFactor"),
+  scoreMultiplierDisplay: document.querySelector("#scoreMultiplier"),
+  // cookieSizeFactorDisplay: document.querySelector("#cookieSizeFactor"),
+  // windSpeedDisplay: document.querySelector("#windSpeed"),
+  // windDirectionDisplay: document.querySelector("#windDirection"),
+  // crawlSpeedDisplay: document.querySelector("#crawlSpeed"),
+  // crawlDirectionDisplay: document.querySelector("#crawlDirection"),
   cookie: document.querySelector("#cookie"),
   cursor: document.querySelector("#cursor"),
+  topStatsBar: document.querySelector("#topStatsBar"),
+  sidePanel: document.querySelector("#sidePanel"),
   openingTitle: document.querySelector("#openingTitle"),
   opener1: document.querySelector("#openingTutorial1"),
   opener2: document.querySelector("#openingTutorial2"),
@@ -554,7 +593,7 @@ ctx.canvas.width = windowStats.canvasWidth;
 ctx.canvas.height = windowStats.canvasHeight;
 
 let score = 0;
-let scoreFactor = 1;
+let clickFactor = 1;
 
 const intervalObj = {
   intervalSpeed: 30,
@@ -588,12 +627,11 @@ document.addEventListener("keydown", (e) => {
       cursorPercentY >= cookie.cookieCoords.top &&
       cursorPercentY <= cookie.cookieCoords.bottom
     ) {
+      if (!gameStartProperties.isSpacebarClicked) {
+        gameStartProperties.isSpacebarClicked = true;
+      }
       cookie.isCookie = false;
-      score += scoreFactor;
-    }
-
-    if (!gameStartProperties.isSpacebarClicked) {
-      gameStartProperties.isSpacebarClicked = true;
+      score += clickFactor;
     }
   } else if (e.code === "Escape") {
     if (effects.isGravity) {
