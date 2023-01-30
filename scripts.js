@@ -23,7 +23,59 @@ Adding black borders to the canvas, one side of which will change to red randoml
 
 /* Game Functions */
 
-function windowResizeTriggers() {}
+function windowResizeTriggers() {
+  //any position that is explicitly defined at program start needs to be redefines on window resize
+}
+
+const gameStartProperties = {
+  isVertMovementMet: false,
+  isHorMovementMet: false,
+  isSpacebarClicked: false,
+  sequence1Complete: false,
+  sequence2Complete: false,
+  sequence3Complete: false,
+  sequence4Complete: false,
+};
+
+function gameStart() {
+  htmlObjects.openingTitle.style.opacity = 1;
+  setTimeout(() => {
+    htmlObjects.openingTitle.style.opacity = 0;
+    htmlObjects.opener1.style.opacity = 1;
+    gameStartProperties.sequence1Complete = true;
+  }, 3000);
+  function checkForActions() {
+    if (userCursor.acceleration[0] > 30 || userCursor.acceleration[0] < -30) {
+      gameStartProperties.isVertMovementMet = true;
+    }
+    if (userCursor.acceleration[1] > 30 || userCursor.acceleration[1] < -30) {
+      gameStartProperties.isHorMovementMet = true;
+    }
+    if (gameStartProperties.isSpacebarClicked && !gameStartProperties.sequence3Complete) {
+      htmlObjects.opener2.style.opacity = 0;
+      htmlObjects.opener3.style.opacity = 1;
+      gameStartProperties.sequence3Complete = true;
+    }
+    if (
+      gameStartProperties.isHorMovementMet &&
+      gameStartProperties.isVertMovementMet &&
+      !gameStartProperties.sequence2Complete
+    ) {
+      htmlObjects.opener1.style.opacity = 0;
+      htmlObjects.opener2.style.opacity = 1;
+      gameStartProperties.sequence2Complete = true;
+    }
+  }
+  let movementCheckInterval = setInterval(checkForActions, 30);
+  // setTimeout(() => {
+  //   htmlObjects.opener1.style.visibility = "visible";
+  //   htmlObjects.opener1.style.opacity = 1;
+  // }, 3000);
+  // setTimeout(() => {
+  //   htmlObjects.opener2.style.visibility = "visible";
+  //   htmlObjects.opener2.style.opacity = 1;
+  // }, 6000);
+}
 
 function defineItemCoords(item) {
   let itemCoords = item.getBoundingClientRect();
@@ -394,6 +446,10 @@ const htmlObjects = {
   crawlDirectionDisplay: document.querySelector("#crawlDirection"),
   cookie: document.querySelector("#cookie"),
   cursor: document.querySelector("#cursor"),
+  openingTitle: document.querySelector("#openingTitle"),
+  opener1: document.querySelector("#openingTutorial1"),
+  opener2: document.querySelector("#openingTutorial2"),
+  opener3: document.querySelector("#openingTutorial3"),
 };
 
 const upgradesAndBuildings = {
@@ -535,6 +591,10 @@ document.addEventListener("keydown", (e) => {
       cookie.isCookie = false;
       score += scoreFactor;
     }
+
+    if (!gameStartProperties.isSpacebarClicked) {
+      gameStartProperties.isSpacebarClicked = true;
+    }
   } else if (e.code === "Escape") {
     if (effects.isGravity) {
       toggleGravity();
@@ -577,3 +637,5 @@ upgradesAndBuildings.engine2.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine3.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine4.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine5.addEventListener("click", placeholderFunction); //
+
+gameStart();

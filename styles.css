@@ -22,7 +22,8 @@ canvas {
 }
 
 #sidePanel {
-    display: flex;
+    display: none;
+    /*display: flex;*/
     flex-direction: column;
     position: absolute;
     height: 100vh;
@@ -93,6 +94,7 @@ button {
 }
 
 #infoPanel {
+    display: none;
     position: absolute;
     right: 0;
     top: 0;
@@ -103,6 +105,7 @@ button {
 }
 
 #helpButton {
+    display: none;
     position: absolute;
     text-decoration: none;
     color: black;
@@ -115,12 +118,25 @@ button {
 }
 
 #openingSequence {
+    width: 60%;
     position: absolute;
     top: 0;
-    font-size: 30px;
+    font-size: 60px;
+    font-family: 'Aboreto', cursive;
     text-align: center;
+    padding: 0;
+    margin: 0;
+    transition: opacity 2s linear;
 }
 
-#openingTutorial2, #openingTutorial3 {
-    display: none;
+#openingTitle, #openingTutorial1, #openingTutorial2, #openingTutorial3 {
+    opacity: 0;
+    position: absolute;
+    top: 20px;
+    left: 0%;
+    transition: visibility 0s, opacity 5s ease-in;
+}
+
+#openingTutorial1, #openingTutorial2, #openingTutorial3 {
+    top: 60px;
 }
