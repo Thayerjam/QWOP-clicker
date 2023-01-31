@@ -27,6 +27,11 @@ function windowResizeTriggers() {
   //any position that is explicitly defined at program start needs to be redefines on window resize
 }
 
+function redefineButtonCoords() {
+  clickableButtons.reset();
+  clickableArea.reset();
+}
+
 const gameStartProperties = {
   isVertMovementMet: false,
   isHorMovementMet: false,
@@ -106,6 +111,9 @@ function gameStart() {
     if (score >= 10 && gameStartProperties.sequence5Complete) {
       htmlObjects.sidePanel.style.left = 0;
       gameStartProperties.sequence6Complete = true;
+      setTimeout(() => {
+        redefineButtonCoords();
+      }, 4000);
     }
   }
   let movementCheckInterval = setInterval(checkForActions, 30);
@@ -296,8 +304,8 @@ function incrementScore() {
 } // not currently used
 
 function updateDisplay() {
-  // htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
-  // htmlObjects.clickFactorDisplay.innerText = `Score Factor: ${clickFactor}`;
+  htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
+  htmlObjects.clickFactorDisplay.innerText = `Score Factor: ${clickFactor}`;
   // htmlObjects.cookieSizeFactorDisplay.innerText = `Cookie Size Factor: ${cookie.sizeFactor}`;
   // htmlObjects.vertAccelerationDisplay.innerText = "Vertical Accel: " + userCursor.acceleration[0];
   // htmlObjects.horAccelerationDisplay.innerText = "Horizontal Accel: " + userCursor.acceleration[1];
@@ -305,7 +313,6 @@ function updateDisplay() {
   // htmlObjects.windDirectionDisplay.innerText = `Wind Direction: ${effects.windDirection[0]}, ${effects.windDirection[1]}`;
   // htmlObjects.crawlSpeedDisplay.innerText = `Crawl Speed: ${cookie.crawlSpeed[0]}`;
   // htmlObjects.crawlDirectionDisplay.innerText = `Crawl Direction: ${cookie.crawlDirection[0]}, ${cookie.crawlDirection[1]}`;
-  htmlObjects.topStatsBar.score;
 }
 
 function iterate() {
@@ -525,6 +532,23 @@ const clickableButtons = {
   engine3: defineItemCoords(upgradesAndBuildings.engine3),
   engine4: defineItemCoords(upgradesAndBuildings.engine4),
   engine5: defineItemCoords(upgradesAndBuildings.engine5),
+  reset: function () {
+    this.upgrade1 = defineItemCoords(upgradesAndBuildings.upgrade1);
+    this.upgrade2 = defineItemCoords(upgradesAndBuildings.upgrade2);
+    this.upgrade3 = defineItemCoords(upgradesAndBuildings.upgrade3);
+    this.upgrade4 = defineItemCoords(upgradesAndBuildings.upgrade4);
+    this.upgrade5 = defineItemCoords(upgradesAndBuildings.upgrade5);
+    this.building1 = defineItemCoords(upgradesAndBuildings.building1);
+    this.building2 = defineItemCoords(upgradesAndBuildings.building2);
+    this.building3 = defineItemCoords(upgradesAndBuildings.building3);
+    this.building4 = defineItemCoords(upgradesAndBuildings.building4);
+    this.building5 = defineItemCoords(upgradesAndBuildings.building5);
+    this.engine1 = defineItemCoords(upgradesAndBuildings.engine1);
+    this.engine2 = defineItemCoords(upgradesAndBuildings.engine2);
+    this.engine3 = defineItemCoords(upgradesAndBuildings.engine3);
+    this.engine4 = defineItemCoords(upgradesAndBuildings.engine4);
+    this.engine5 = defineItemCoords(upgradesAndBuildings.engine5);
+  },
 };
 
 const clickableArea = {
@@ -532,6 +556,12 @@ const clickableArea = {
   right: clickableButtons.upgrade1.right,
   top: clickableButtons.upgrade1.top,
   bottom: clickableButtons.engine5.bottom,
+  reset: function () {
+    this.left = clickableButtons.upgrade1.left;
+    this.right = clickableButtons.upgrade1.right;
+    this.top = clickableButtons.upgrade1.top;
+    this.bottom = clickableButtons.engine5.bottom;
+  },
 };
 
 const userCursor = {
@@ -619,7 +649,10 @@ document.addEventListener("keydown", (e) => {
     let cursorPercentX = (userCursor.x / windowStats.canvasWidth) * 100;
     let cursorPercentY = (userCursor.y / windowStats.canvasHeight) * 100;
 
+    console.log(cursorPercentX, cursorPercentY);
+
     if (checkForClickableArea(cursorPercentX, cursorPercentY)) {
+      console.log("true!");
       checkAndClickButton(cursorPercentY);
     } else if (
       cursorPercentX >= cookie.cookieCoords.left &&
@@ -676,4 +709,11 @@ upgradesAndBuildings.engine3.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine4.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine5.addEventListener("click", placeholderFunction); //
 
-gameStart();
+// gameStart();
+
+function cheatForTesting() {
+  htmlObjects.sidePanel.style.left = 0;
+  htmlObjects.topStatsBar.style.top = 0;
+}
+
+cheatForTesting();
