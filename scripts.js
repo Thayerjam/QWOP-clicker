@@ -715,7 +715,7 @@ for (button of upgradesAndBuildingsArray) {
   button[1].addEventListener("click", clickButton);
 }
 
-//gameStart();
+gameStart();
 
 function cheatForTesting() {
   htmlObjects.sidePanel.style.left = 0;
@@ -725,4 +725,4 @@ function cheatForTesting() {
   }, 4000);
 }
 
-cheatForTesting();
+//cheatForTesting();
