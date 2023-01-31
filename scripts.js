@@ -1,24 +1,38 @@
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~Bugs
+    1) Score Per Click is able to go negative
+    2) Score gained from wall bounces is able to gen points by just holding down 1 button
+    3) big/smallifying cookie allows it to break game borders
+    4) cookie can spawn inside intro text
+    5) into text sequence3 -> sequence4 isn't fading out and in properly. Fade is overlapping heavily
+    6) top nav bar text shouldn't be pushed to the right until the sidePanel pulls out
+
+
+~Needs work
+    1) Color scheme for buttons
+    2) Making buttons come in as the game progresses instead of all showing up at once
+    3) Additional Stats for topStatsBar
+        i) acceleration
+        ii) Top Speed?
+            A) Toggles that increase/decrease speed?
+    4) Windspeed and Winddirection visuals
+    5) Additional intro text instructing the user that the mouse cursor cannot be used
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~ideas
     1) Toggleable "skulls" that make the game harder but give more points 
     2) clicker classes, talent trees, experience, skills
-    3) bouncing between sides as a way to get score
-    4) action game, fighting blips on the screen with skills/abilities. freezeframe/slowdown on successful hit
+      i) press c to get to character menu, where acceleration and physics are easier to deal with
+    3) action game, fighting blips on the screen with skills/abilities. freezeframe/slowdown on successful hit
 
 ~skills
     1)
 
-~classes {
+~classes
     1) beast neighbor
     2) necrodancer
     3) lance a little
-}
-*/
 
-/*
-~where I left off
 
-Adding black borders to the canvas, one side of which will change to red randomly and periodically like with whack a mole. Score increases and color changes from red to black when player hits the red side.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 /* Game Functions */
@@ -284,7 +298,7 @@ function incrementScore() {
   if (effects.isHorScoring) {
     score += Math.round(Math.abs(userCursor.acceleration[1]) / 20);
   }
-} // not currently used
+}
 
 function updateDisplay() {
   htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
@@ -551,8 +565,7 @@ const userCursor = {
   x: 100,
   y: 200,
   size: 22,
-  /* [direction, direction] */
-  // ^ FIND THIS OUT ^
+  /* [down/up, right/left] */
   acceleration: [0, 0],
   /* [down, up, right, left] */
   currentDirection: [0, 0, 0, 0],
@@ -564,7 +577,7 @@ const windowStats = {
   boxAdjustedHeight: 1080 - userCursor.size,
   boxAdjustedWidth: 1920 - userCursor.size,
   borderSize: 0,
-  sidebarSize: 250,
+  sidebarSize: 200,
 };
 
 const effects = {
@@ -632,10 +645,7 @@ document.addEventListener("keydown", (e) => {
     let cursorPercentX = (userCursor.x / windowStats.canvasWidth) * 100;
     let cursorPercentY = (userCursor.y / windowStats.canvasHeight) * 100;
 
-    console.log(cursorPercentX, cursorPercentY);
-
     if (checkForClickableArea(cursorPercentX, cursorPercentY)) {
-      console.log("true!");
       checkAndClickButton(cursorPercentY);
     } else if (
       cursorPercentX >= cookie.cookieCoords.left &&
@@ -674,14 +684,21 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
+function clickButton(event) {
+  event.srcElement.classList.add("clicked");
+  setTimeout(() => {
+    event.srcElement.classList.remove("clicked");
+  }, 100);
+}
+
 upgradesAndBuildings.upgrade1.addEventListener("click", toggleGravity);
 upgradesAndBuildings.upgrade2.addEventListener("click", toggleWind);
-upgradesAndBuildings.upgrade3.addEventListener("click", toggleCookieCrawl); //
+upgradesAndBuildings.upgrade3.addEventListener("click", toggleCookieCrawl);
 upgradesAndBuildings.upgrade4.addEventListener("click", toggleSmallCookie); // needs tweaking to account for decimal values
 upgradesAndBuildings.upgrade5.addEventListener("click", toggleBigCookie); // needs tweaking to account for decimal values
 
-upgradesAndBuildings.building1.addEventListener("click", toggleVertScoring); //
-upgradesAndBuildings.building2.addEventListener("click", toggleHorScoring); //
+upgradesAndBuildings.building1.addEventListener("click", toggleVertScoring);
+upgradesAndBuildings.building2.addEventListener("click", toggleHorScoring);
 upgradesAndBuildings.building3.addEventListener("click", toggleIncreasedClickFactor);
 upgradesAndBuildings.building4.addEventListener("click", toggleBounceScoring);
 upgradesAndBuildings.building5.addEventListener("click", toggleScoreOverTime); //
@@ -692,11 +709,20 @@ upgradesAndBuildings.engine3.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine4.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine5.addEventListener("click", placeholderFunction); //
 
-gameStart();
+let upgradesAndBuildingsArray = Object.entries(upgradesAndBuildings);
+
+for (button of upgradesAndBuildingsArray) {
+  button[1].addEventListener("click", clickButton);
+}
+
+//gameStart();
 
 function cheatForTesting() {
   htmlObjects.sidePanel.style.left = 0;
   htmlObjects.topStatsBar.style.top = 0;
+  setTimeout(() => {
+    redefineButtonCoords();
+  }, 4000);
 }
 
-// cheatForTesting();
+cheatForTesting();
