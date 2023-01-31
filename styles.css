@@ -10,7 +10,8 @@ body {
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #f1f1f1;
+    background-color: #F0EBD8;
+    cursor: not-allowed;
 }
 
 canvas {
@@ -31,10 +32,10 @@ canvas {
     left: -300px;
     top: 0;
     z-index: 1;
-    background-color: #f1f1f1;
-    border-right: 5px solid black;
-    border-top: 2px solid black;
-    border-bottom: 2px solid black;
+    background-color: #1D2D44;
+    border-right: 5px solid #0D1321;
+    border-top: 2px solid #0D1321;
+    border-bottom: 2px solid #0D1321;
     border-bottom-right-radius: 20px;
     border-top-right-radius: 20px;
     transition: all 4s ease-out;
@@ -64,7 +65,7 @@ canvas {
 }
 
 #upgradeWindow, #buildingWindow {
-    border-bottom: 3px dashed black;
+    border-bottom: 1px solid black;
 }
 
 #upgradeWindow > *, #buildingWindow > *, #incrementEngines > * {
@@ -93,8 +94,8 @@ button {
     height: 40px;
     border-radius: 10px;
     pointer-events: none;
-    background-color: rgb(64, 64, 64);
-    color: #f1f1f1;
+    background-color: #3E5C76;
+    color: #F0EBD8;
 }
 
 #infoPanel {
@@ -113,7 +114,7 @@ button {
     position: absolute;
     text-decoration: none;
     color: black;
-    border: 3px solid black;
+    border: 3px solid #0D1321;
     padding: 12px;
     margin: 15px;
     bottom: 0;
@@ -147,8 +148,8 @@ button {
     position: fixed;
     width: 100%;
     padding-left: 300px;
-    background-color: black;
-    color: #f1f1f1;
+    background-color: #0D1321;
+    color: #F0EBD8;
     justify-content: space-around;
     top: -5%;
     transition: all 3s ease-out;

@@ -200,23 +200,6 @@ function reduceAcceleration() {
   if (userCursor.acceleration[1] < 0) {
     userCursor.acceleration[1] += 1;
   }
-  //attempts at removing the bug where your acceleration gets stuck at 0.5
-
-  // if (userCursor.acceleration[0] < 1 && userCursor.acceleration[0] > 0) {
-  //   userCursor.acceleration[0] = (userCursor.acceleration[0] - 0.1).toFixed(2);
-  // }
-  // if (userCursor.acceleration[0] > -1 && userCursor.acceleration[0] < 0) {
-  //   userCursor.acceleration[0] = (userCursor.acceleration[0] + 0.1).toFixed(2);
-  // }
-  // if (userCursor.acceleration[1] < 1 && userCursor.acceleration[1] > 0) {
-  //   userCursor.acceleration[1] = (userCursor.acceleration[1] - 0.1).toFixed(2);
-  // }
-  // if (userCursor.acceleration[1] > -1 && userCursor.acceleration[0] < 0) {
-  //   userCursor.acceleration[1] = (userCursor.acceleration[1] + 0.1).toFixed(2);
-  // }
-
-  // userCursor.acceleration[0] = Math.round(userCursor.acceleration[0]);
-  // userCursor.acceleration[1] = Math.round(userCursor.acceleration[1]);
 }
 
 function changeAcceleration() {
@@ -291,7 +274,7 @@ function edgeCollision() {
 }
 
 function drawSquare() {
-  ctx.drawImage(htmlObjects.cursor, userCursor.x, userCursor.y, userCursor.size, userCursor.size);
+  ctx.drawImage(htmlObjects.cursor, userCursor.x, userCursor.y, (userCursor.size / 4) * 3, userCursor.size);
 }
 
 function incrementScore() {
@@ -305,7 +288,7 @@ function incrementScore() {
 
 function updateDisplay() {
   htmlObjects.scoreDisplay.innerText = `Score: ${score}`;
-  htmlObjects.clickFactorDisplay.innerText = `Score Factor: ${clickFactor}`;
+  htmlObjects.clickFactorDisplay.innerText = `SPC: ${clickFactor}`;
   // htmlObjects.cookieSizeFactorDisplay.innerText = `Cookie Size Factor: ${cookie.sizeFactor}`;
   // htmlObjects.vertAccelerationDisplay.innerText = "Vertical Accel: " + userCursor.acceleration[0];
   // htmlObjects.horAccelerationDisplay.innerText = "Horizontal Accel: " + userCursor.acceleration[1];
@@ -567,7 +550,7 @@ const clickableArea = {
 const userCursor = {
   x: 100,
   y: 200,
-  size: 30,
+  size: 22,
   /* [direction, direction] */
   // ^ FIND THIS OUT ^
   acceleration: [0, 0],
@@ -709,11 +692,11 @@ upgradesAndBuildings.engine3.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine4.addEventListener("click", placeholderFunction); //
 upgradesAndBuildings.engine5.addEventListener("click", placeholderFunction); //
 
-// gameStart();
+gameStart();
 
 function cheatForTesting() {
   htmlObjects.sidePanel.style.left = 0;
   htmlObjects.topStatsBar.style.top = 0;
 }
 
-cheatForTesting();
+// cheatForTesting();
